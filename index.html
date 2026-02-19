@@ -22,22 +22,17 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             padding: 2rem;
             position: relative;
             overflow-x: hidden;
         }
 
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 20% 80%, rgba(120, 180, 220, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(150, 200, 240, 0.08) 0%, transparent 50%);
-            pointer-events: none;
+        .band-image {
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         }
 
         .container {
@@ -68,30 +63,85 @@
             margin-bottom: 3rem;
         }
 
-        .cta-button {
-            display: inline-block;
-            padding: 1rem 2.5rem;
+        .signup-section {
+            margin-bottom: 3rem;
+        }
+
+        .signup-title {
             font-size: 1rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.15em;
+            color: #e0f0ff;
+            margin-bottom: 1rem;
+        }
+
+        .signup-form {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .signup-form input[type="email"] {
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            width: 260px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .signup-form input[type="email"]::placeholder {
+            color: #8899aa;
+        }
+
+        .signup-form input[type="email"]:focus {
+            border-color: rgba(160, 196, 232, 0.5);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .signup-form button {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
             color: #0a0a0a;
             background: linear-gradient(135deg, #e0f0ff 0%, #a0c4e8 100%);
             border: none;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-decoration: none;
-            margin-bottom: 3rem;
         }
 
-        .cta-button:hover {
-            transform: translateY(-3px);
+        .signup-form button:hover {
+            transform: translateY(-2px);
             box-shadow: 0 10px 40px rgba(160, 196, 232, 0.3);
         }
 
-        .cta-button:active {
+        .signup-form button:active {
             transform: translateY(-1px);
+        }
+
+        .signup-message {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #a0c4e8;
+            display: none;
+        }
+
+        .signup-message.show {
+            display: block;
+        }
+
+        .signup-message.error {
+            color: #e88a8a;
         }
 
         .social-links {
@@ -167,13 +217,20 @@
     <div class="frost-decoration frost-1"></div>
     <div class="frost-decoration frost-2"></div>
 
+    <img src="avatar2.jpg" alt="A Bit Cold" class="band-image">
+
     <div class="container">
         <h1 class="logo">A Bit Cold</h1>
         <p class="tagline">Montreal</p>
 
-        <button class="cta-button" onclick="ml('show', 'YOUR_FORM_ID', true)">
-            Join the Cold Circle
-        </button>
+        <div class="signup-section">
+            <p class="signup-title">Join the Cold Circle</p>
+            <form class="signup-form" id="signup-form">
+                <input type="email" name="email" placeholder="Enter your email" required>
+                <button type="submit">Join</button>
+            </form>
+            <p class="signup-message" id="signup-message"></p>
+        </div>
 
         <div class="social-links">
             <a href="https://www.instagram.com/abitcoldmtl/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
@@ -184,14 +241,90 @@
         </div>
     </div>
 
-    <!-- MailerLite Universal Script -->
+    <!-- MailerLite Universal -->
     <script>
         (function(w,d,e,u,f,l,n){w[f]=w[f]||function(){(w[f].q=w[f].q||[])
         .push(arguments);},l=d.createElement(e),l.async=1,l.src=u,
         n=d.getElementsByTagName(e)[0],n.parentNode.insertBefore(l,n);})
         (window,document,'script','https://assets.mailerlite.com/js/universal.js','ml');
-        ml('account', 'YOUR_ACCOUNT_ID');
+        ml('account', '2115809');
     </script>
-    <!-- End MailerLite Universal Script -->
+
+    <!-- Hidden MailerLite form for submission -->
+    <div class="ml-embedded" data-form="SQvCO6" style="position:absolute;left:-9999px;"></div>
+
+    <script>
+        document.getElementById('signup-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const email = this.querySelector('input[type="email"]').value;
+            const messageEl = document.getElementById('signup-message');
+            const button = this.querySelector('button');
+
+            button.disabled = true;
+            button.textContent = '...';
+
+            // Wait for MailerLite form to load, then fill and submit it
+            const checkForm = setInterval(function() {
+                const mlForm = document.querySelector('.ml-embedded form');
+                if (mlForm) {
+                    clearInterval(checkForm);
+
+                    const mlEmailInput = mlForm.querySelector('input[type="email"]');
+                    if (mlEmailInput) {
+                        mlEmailInput.value = email;
+
+                        // Listen for success
+                        const observer = new MutationObserver(function(mutations) {
+                            mutations.forEach(function(mutation) {
+                                if (mutation.target.classList.contains('ml-form-successBody') ||
+                                    document.querySelector('.ml-form-successBody')) {
+                                    observer.disconnect();
+                                    button.disabled = false;
+                                    button.textContent = 'Join';
+                                    messageEl.textContent = "You're in the circle. Stay cold.";
+                                    messageEl.classList.remove('error');
+                                    messageEl.classList.add('show');
+                                    document.getElementById('signup-form').reset();
+                                }
+                            });
+                        });
+                        observer.observe(document.querySelector('.ml-embedded'), {
+                            childList: true,
+                            subtree: true,
+                            attributes: true
+                        });
+
+                        // Submit the hidden form
+                        const submitBtn = mlForm.querySelector('button[type="submit"]');
+                        if (submitBtn) submitBtn.click();
+
+                        // Timeout fallback
+                        setTimeout(function() {
+                            if (button.textContent === '...') {
+                                button.disabled = false;
+                                button.textContent = 'Join';
+                                messageEl.textContent = "You're in the circle. Stay cold.";
+                                messageEl.classList.remove('error');
+                                messageEl.classList.add('show');
+                                document.getElementById('signup-form').reset();
+                            }
+                        }, 3000);
+                    }
+                }
+            }, 100);
+
+            // Timeout if form never loads
+            setTimeout(function() {
+                clearInterval(checkForm);
+                if (button.textContent === '...') {
+                    button.disabled = false;
+                    button.textContent = 'Join';
+                    messageEl.textContent = 'Something went wrong. Try again.';
+                    messageEl.classList.add('error', 'show');
+                }
+            }, 5000);
+        });
+    </script>
 </body>
 </html>
