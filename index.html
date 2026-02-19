@@ -140,6 +140,12 @@
             transform: translateY(-1px);
         }
 
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+
         .signup-message {
             margin-top: 1rem;
             font-size: 0.9rem;
@@ -268,7 +274,7 @@
             <p class="signup-description">Early access to new music & concert announcements</p>
             <form class="signup-form" id="signup-form">
                 <input type="email" name="email" placeholder="Enter your email" required>
-                <button type="submit">🥭</button>
+                <button type="submit" onclick="this.style.animation='spin 0.4s ease-out'; setTimeout(() => this.style.animation='', 400)">🥭</button>
             </form>
             <p class="signup-message" id="signup-message"></p>
         </div>
@@ -308,7 +314,8 @@
             const button = this.querySelector('button');
 
             button.disabled = true;
-            button.textContent = '...';
+            button.style.animation = 'spin 0.4s ease-out';
+            setTimeout(() => { button.style.animation = ''; }, 400);
 
             // Wait for MailerLite form to load, then fill and submit it
             const checkForm = setInterval(function() {
@@ -327,7 +334,7 @@
                                     document.querySelector('.ml-form-successBody')) {
                                     observer.disconnect();
                                     button.disabled = false;
-                                    button.textContent = 'Join';
+                                    button.disabled = false;
                                     messageEl.textContent = "You're in the circle. Stay cold.";
                                     messageEl.classList.remove('error');
                                     messageEl.classList.add('show');
@@ -349,7 +356,7 @@
                         setTimeout(function() {
                             if (button.textContent === '...') {
                                 button.disabled = false;
-                                button.textContent = 'Join';
+                                button.disabled = false;
                                 messageEl.textContent = "You're in the circle. Stay cold.";
                                 messageEl.classList.remove('error');
                                 messageEl.classList.add('show');
@@ -365,7 +372,7 @@
                 clearInterval(checkForm);
                 if (button.textContent === '...') {
                     button.disabled = false;
-                    button.textContent = 'Join';
+                    button.disabled = false;
                     messageEl.textContent = 'Something went wrong. Try again.';
                     messageEl.classList.add('error', 'show');
                 }
